@@ -1,12 +1,13 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
 #include <algorithm>
 #include "KeyGenerator.h"
 
 using namespace std;
 
-const bool DEBUG = true;
+const bool DEBUG = false;
 
 struct RandomInteger {
 	RandomInteger(char const *pphrase): kg(pphrase){}
@@ -158,4 +159,58 @@ void histo(int period, int which, std::istream &in) {
 		printf("%c: %d (%.02f%%)\n", tmp.ch, tmp.cnt, 100.0*tmp.cnt/total);
 	}
 	delete []buf;
+}
+
+inline bool check_alpha(const string &str) {
+	for (size_t i = 0; i < str.size(); ++i) {
+		if (str[i] < 'a' || str[i] > 'z') {
+			return false;
+		}
+	}
+	return true;
+}
+
+// No hash map avaliable in c++98. Do a brutal-force search.
+void kasiski(const string &file) {
+	cout << "Kasiski Method" << endl; 
+	cout << "==============" << endl;
+	int len;
+	for (len = 4; ; ++len) {
+		bool matches = false;
+		for (int i = 0; i <= (int)file.size()-len; ++i) {
+			string cur = file.substr(i, len);
+			if (!check_alpha(cur)) {
+				continue;
+			}
+			int j = i;
+			while (true) {
+				j = file.find(cur, j+1);
+				if ((size_t)j == string::npos) {
+					break;
+				}
+				matches = true;
+				printf("len=%d, i=%d, j=%d, j-i=%d, %s\n", len, i, j, j-i, cur.c_str());
+			}
+		}
+		if (!matches) {
+			break;
+		}
+	}
+	printf("len=%d, no more matches\n", len);
+}
+
+void solve(int max_t, string file) {
+	ifstream in(file.c_str());
+	if (!in.is_open()) {
+		cerr << "file not exists" << endl;
+		exit(1);
+	}
+	stringstream buf;
+	buf << in.rdbuf();
+	kasiski(buf.str());
+	cout << endl;
+	average_index_of_coincidence(buf.str());
+	cout << endl;
+	auto_correlation(buf.str());
+	cout << endl;
 }

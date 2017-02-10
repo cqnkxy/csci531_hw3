@@ -105,6 +105,22 @@ void parse_histo(int argc, char *argv[]) {
 	}
 }
 
+void parse_solve(int argc, char *argv[]) {
+	if (argc != 4) {
+		malformed_command();
+	}
+	int max_t;
+	try {
+		if (strncmp(argv[2], "-l=", 3) != 0) {
+			malformed_command();
+		}
+		max_t = atoi(argv[2]+3);
+		solve(max_t, argv[3]);
+	} catch(...) {
+		malformed_command();
+	}
+}
+
 void parse_cmd_run(int argc, char *argv[]) 
 {
 	if (argc < 2) {
@@ -117,7 +133,9 @@ void parse_cmd_run(int argc, char *argv[])
 		parse_invkey(argc, argv);
 	} else if (strcmp(argv[1], "histo") == 0) {
 		parse_histo(argc, argv);
-	} else {
+	} else if (strcmp(argv[1], "solve") == 0) {
+		parse_solve(argc, argv);
+	} else {	
 		malformed_command();
 	}
 }

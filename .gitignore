@@ -2,4 +2,5 @@
 *.txt
 *.o
 hw3
-
+*.ct
+*.solve
