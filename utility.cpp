@@ -125,6 +125,9 @@ struct CharCnt
 	void incr() { ++cnt; }
 };
 
+// The output must be sorted according to the frequencies of the 
+// ciphertext characters in descending order. If there is a tie, 
+// you must output letters earlier in the alphabet first. 
 bool CharCntCmp(const CharCnt &self, const CharCnt &other) {
 	if (self.cnt != other.cnt) {
 		return self.cnt > other.cnt;
@@ -199,6 +202,48 @@ void kasiski(const string &file) {
 	printf("len=%d, no more matches\n", len);
 }
 
+void average_index_of_coincidence(const string &file, int max_t) {
+	cout << "Average Index of Coincidence" << endl;
+	cout << "============================" << endl;
+	const double kp=0.0658, kr=1.0/26;
+	vector<char> cntr(26, 0);
+	int L = 0;
+	for (int i = 0; i < (int)file.size(); ++i) {
+		char ch = file[i];
+		if ('a' <= ch && ch <= 'z') {
+			++cntr[ch-'a'];
+			++L;
+		}
+	}
+	double IC = 0.0;
+	for (int i = 0; i < (int)cntr.size(); ++i) {
+		IC += cntr[i] * (cntr[i]-1);
+	}
+	IC /= L*(L-1);
+	printf("L=%d\n", L);
+	for (char ch = 'a'; ch <= 'z'; ++ch) {
+		printf("f('%c')=%d\n", ch, cntr[ch-'a']);
+	}
+	printf("IC=%f\n", IC);
+	for (int t = 1; t <= max_t; ++t) {
+		printf("t=%d, E(IC)=%lf\n", t, kp*(L-t)/(L-1)/t + kr*(t-1)*L/(L-1)/t);
+	}
+}
+
+void auto_correlation(const string &file, int max_t) {
+	cout << "Auto-correlation Method" << endl;
+	cout << "=======================" << endl;
+	for (int t = 1; t <= max_t; ++t) {
+		int cnt = 0;
+		for (int i = 0; i < (int)file.size()-t; ++i) {
+			if (file[i] >= 'a' and file[i] <= 'z') {
+				cnt += file[i] == file[i+t];
+			}
+		}
+		printf("t=%d, count=%d\n", t, cnt);
+	}
+}
+
 void solve(int max_t, string file) {
 	ifstream in(file.c_str());
 	if (!in.is_open()) {
@@ -209,8 +254,8 @@ void solve(int max_t, string file) {
 	buf << in.rdbuf();
 	kasiski(buf.str());
 	cout << endl;
-	average_index_of_coincidence(buf.str());
+	average_index_of_coincidence(buf.str(), max_t);
 	cout << endl;
-	auto_correlation(buf.str());
+	auto_correlation(buf.str(), max_t);
 	cout << endl;
 }
