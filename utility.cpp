@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 #include "KeyGenerator.h"
 
 using namespace std;
@@ -113,4 +114,51 @@ void invkey(string keyfile) {
 		}
 		cout << inv << endl;
 	}
+}
+
+struct CharCnt
+{
+	CharCnt(char _ch, int _cnt): ch(_ch), cnt(_cnt) {}
+	char ch;
+	int cnt;
+};
+
+struct CharCntCmp
+{
+	bool operator()(const CharCnt &self, const CharCnt &other) const {
+		if (self.cnt != other.cnt) {
+			return self.cnt > other.cnt;
+		} else {
+			return self.ch < other.ch;
+		}
+	}
+};
+
+void histo(int period, int which, std::istream &in) {
+	if (period < 1 || which < 1 || which > period) {
+		cerr << "Wrong period or which" << endl;
+		exit(1);
+	}
+	vector<char> cntr(26, 0);
+	size_t total = 0;
+	char *buf = new char[period];
+	while (in.read(buf, period)) {
+		char tmp = buf[which-1];
+		if (tmp < 'a' || tmp > 'z') {
+			continue;
+		}
+		++cntr[tmp-'a'];
+		++total;
+	}
+	vector<CharCnt> toSort;
+	for (int i = 0; i < 26; ++i) {
+		toSort.push_back(CharCnt('a'+i, cntr[i]));
+	}
+	sort(toSort.begin(), toSort.end(), CharCntCmp());
+	printf("L=%lu\n", total);
+	for (int i = 0; i < 26; ++i) {
+		const CharCnt &tmp = toSort[i];
+		printf("%c: %d (%.02f%%)\n", tmp.ch, tmp.cnt, 100.0*tmp.cnt/total);
+	}
+	delete []buf;
 }

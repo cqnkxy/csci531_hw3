@@ -11,7 +11,12 @@ const bool DEBUG = false;
 
 void malformed_command() 
 {
-	const string USAGE = "\n\thw3 stream -p=pphrase -l=len\n\thw3 encrypt -p=pphrase -out=name [pbmfile]\n\thw3 merge pbmfile1 pbmfile2\n\thw3 decrypt [pbmfile]\n";
+	const string USAGE = 
+		"\n\thw3 keygen -p=pphrase -t=period\n" 
+	    "\thw3 crypt -k=keyfile [file]\n" 
+	    "\thw3 invkey keyfile\n" 
+	    "\thw3 histo -t=period -i=which [file]\n" 
+	    "\thw3 solve -l=max_t file\n";
 	cerr << "Malformed command. Use it as:" << endl << USAGE << endl;
 	exit(1);
 }
@@ -68,6 +73,38 @@ void parse_invkey(int argc, char *argv[]) {
 	invkey(argv[2]);
 }
 
+void parse_histo(int argc, char *argv[]) {
+	if (argc != 4 && argc != 5) {
+		malformed_command();
+	}
+	int period, which;
+	try {
+		for (int i = 2; i <= 3; ++i) {
+			string opt(argv[i]);
+			if (opt.substr(0, 3) == "-t=") {
+				period = atoi(opt.substr(3, -1).c_str());
+			} else if (opt.substr(0, 3) == "-i=") {
+				which = atoi(opt.substr(3, -1).c_str());
+			} else {
+				malformed_command();
+			}
+		}
+	} catch(...) {
+		malformed_command();
+	}
+	if (argc == 5) {
+		ifstream infile(argv[4]);
+		if (!infile.is_open()) {
+			cerr << "file not exits" << endl;
+			exit(1);
+		}
+		histo(period, which, infile);
+		infile.close();
+	} else {
+		histo(period, which, cin);
+	}
+}
+
 void parse_cmd_run(int argc, char *argv[]) 
 {
 	if (argc < 2) {
@@ -78,6 +115,8 @@ void parse_cmd_run(int argc, char *argv[])
 		parse_crypt(argc, argv);
 	} else if (strcmp(argv[1], "invkey") == 0) {
 		parse_invkey(argc, argv);
+	} else if (strcmp(argv[1], "histo") == 0) {
+		parse_histo(argc, argv);
 	} else {
 		malformed_command();
 	}
