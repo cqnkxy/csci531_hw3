@@ -90,6 +90,7 @@ void crypt(string keyfile, std::istream &in) {
 	// message.
 	while (in >> noskipws >> ch) {
 		if (ch == '\n') {
+			cout << ch;
 			break;
 		} else if (ch < 0x20 or ch > 0x7e) {
 			cerr << "Invalid input character!" << endl;

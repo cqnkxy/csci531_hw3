@@ -61,8 +61,8 @@ void parse_crypt(int argc, char *argv[]) {
 			cerr << "File not exists" << endl;
 			exit(1);
 		}
-		infile.close();
 		crypt(keyfile, infile);
+		infile.close();
 	}
 }
 
