@@ -40,12 +40,44 @@ void parse_keygen(int argc, char *argv[]) {
 	}
 }
 
+void parse_crypt(int argc, char *argv[]) {
+	if (argc != 3 && argc != 4) {
+		malformed_command();
+	}
+	if (strncmp(argv[2], "-k=", 3) != 0) {
+		malformed_command();
+	}
+	string keyfile(argv[2]+3);
+	if (argc == 3) {
+		crypt(keyfile, cin);
+	} else {
+		ifstream infile(argv[3]);
+		if (!infile.is_open()) {
+			cerr << "File not exists" << endl;
+			exit(1);
+		}
+		infile.close();
+		crypt(keyfile, infile);
+	}
+}
+
+void parse_invkey(int argc, char *argv[]) {
+	if (argc != 3) {
+		malformed_command();
+	}
+	invkey(argv[2]);
+}
+
 void parse_cmd_run(int argc, char *argv[]) 
 {
 	if (argc < 2) {
 		malformed_command();
 	} else if (strcmp(argv[1], "keygen") == 0) {
 		parse_keygen(argc, argv);
+	} else if (strcmp(argv[1], "crypt") == 0) {
+		parse_crypt(argc, argv);
+	} else if (strcmp(argv[1], "invkey") == 0) {
+		parse_invkey(argc, argv);
 	} else {
 		malformed_command();
 	}

@@ -5,5 +5,7 @@
 #include <string>
 
 void keygen(char const*, int);
+void crypt(std::string keyfile, std::istream &in);
+void invkey(std::string keyfile);
 
 #endif
