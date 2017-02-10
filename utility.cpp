@@ -208,7 +208,9 @@ void average_index_of_coincidence(const string &file, int max_t) {
 	cout << "============================" << endl;
 	const double kp=0.0658, kr=1.0/26;
 	vector<char> cntr(26, 0);
-	int L = 0;
+	// L is the total number of lower case characters. Just following
+	// the notation of this assignment
+	int L = 0; 
 	for (int i = 0; i < (int)file.size(); ++i) {
 		char ch = file[i];
 		if ('a' <= ch && ch <= 'z') {
