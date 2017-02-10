@@ -257,5 +257,4 @@ void solve(int max_t, string file) {
 	average_index_of_coincidence(buf.str(), max_t);
 	cout << endl;
 	auto_correlation(buf.str(), max_t);
-	cout << endl;
 }

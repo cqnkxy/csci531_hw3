@@ -115,6 +115,9 @@ void parse_solve(int argc, char *argv[]) {
 			malformed_command();
 		}
 		max_t = atoi(argv[2]+3);
+		if (max_t < 1) {
+			malformed_command();
+		}
 		solve(max_t, argv[3]);
 	} catch(...) {
 		malformed_command();
